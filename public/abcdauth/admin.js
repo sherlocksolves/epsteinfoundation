@@ -59,13 +59,29 @@ function showLogin() {
   $("refresh-btn").classList.add("hidden");
 }
 
-$("google-sign-in").addEventListener("click", async () => {
-  msg("login-msg", "Redirecting to Google…");
-  const { error } = await adminAuth.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: `${window.location.origin}/abcdauth/` }
-  });
-  if (error) msg("login-msg", error.message, "error");
+const googleButton = $("google-sign-in");
+googleButton?.addEventListener("click", async () => {
+  if (googleButton.disabled) return;
+  googleButton.disabled = true;
+  googleButton.textContent = "Connecting to Google…";
+  msg("login-msg", "Opening Google sign-in…");
+  try {
+    const { data, error } = await adminAuth.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: new URL("/abcdauth/", window.location.origin).toString(),
+        skipBrowserRedirect: true
+      }
+    });
+    if (error) throw error;
+    if (!data?.url) throw new Error("Supabase did not return a Google sign-in URL. Check that Google is enabled in Supabase Authentication.");
+    window.location.assign(data.url);
+  } catch (error) {
+    console.error("Google sign-in failed:", error);
+    msg("login-msg", error?.message || "Google sign-in could not start. Please try again.", "error");
+    googleButton.disabled = false;
+    googleButton.textContent = "Continue with Google";
+  }
 });
 
 $("logout").onclick = async () => {
