@@ -1,10 +1,4 @@
 import {db,reply,preflight,clean,limited} from "./_shared.ts";
-const enc=(a:Uint8Array)=>btoa(String.fromCharCode(...a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
-const dec=(s:string)=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((s.length+3)%4)),c=>c.charCodeAt(0));
-async function hashPass(pass:string){const salt=crypto.getRandomValues(new Uint8Array(16)),rounds=310000,k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveBits"]),v=new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt,iterations:rounds},k,256));return "pbkdf2_sha256$"+rounds+"$"+enc(salt)+"$"+enc(v);}
-async function checkPass(pass:string,stored:string){try{const [alg,n,salt,want]=stored.split("$");if(alg!=="pbkdf2_sha256"||Number(n)<100000)return false;const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveBits"]),v=new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:dec(salt),iterations:Number(n)},k,256)),got=enc(v);if(got.length!==want.length)return false;let d=0;for(let i=0;i<got.length;i++)d|=got.charCodeAt(i)^want.charCodeAt(i);return d===0;}catch{return false;}}
-async function key(){const secrets=JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS")||"{}"),secret=secrets.default||Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");if(!secret)throw new Error("Server signing key unavailable");const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("direct-support-admin:"+secret));return crypto.subtle.importKey("raw",digest,{name:"HMAC",hash:"SHA-256"},false,["sign","verify"]);}
-async function token(user:string){const now=Math.floor(Date.now()/1000),head=enc(new TextEncoder().encode(JSON.stringify({alg:"HS256",typ:"JWT"}))),body=enc(new TextEncoder().encode(JSON.stringify({sub:user,iat:now,exp:now+7200}))),input=head+"."+body,sig=new Uint8Array(await crypto.subtle.sign("HMAC",await key(),new TextEncoder().encode(input)));return input+"."+enc(sig);}
 async function authGoogle(client:any,req:Request){
   try {
     const bearer=(req.headers.get("authorization")||"").match(/^Bearer\s+(.+)$/i);
@@ -58,13 +52,6 @@ Deno.serve(async(req)=>{
       const b=await req.json(),id=clean(b.id,80),mode=b.mode;if(!id)return reply({success:false,error:"Missing record ID."},400);
       if(mode==="delete"){const {error}=await client.from("private_contributions").delete().eq("id",id);if(error)throw error;}
       return reply({success:true});
-    }
-    if(req.method==="POST"&&action==="change-credentials"){
-      const b=await req.json(),{data:u}=await client.from("admin_users").select("id,username,password_hash").eq("username",who.sub).single();
-      if(!u||!(await checkPass(String(b.currentPassword||""),u.password_hash)))return reply({success:false,error:"Current password is incorrect."},403);
-      const nextUser=clean(b.username,80)||u.username,nextPass=typeof b.password==="string"?b.password:"";if(nextPass&&nextPass.length<12)return reply({success:false,error:"New password must contain at least 12 characters."},400);
-      const update:any={username:nextUser,updated_at:new Date().toISOString()};if(nextPass)update.password_hash=await hashPass(nextPass);
-      const {error}=await client.from("admin_users").update(update).eq("id",u.id);if(error)throw error;return reply({success:true,token:await token(nextUser),username:nextUser});
     }
     if(req.method==="POST"&&action==="update-settings"){
       const b=await req.json(),btc=clean(b.btc_address,100),bsc=clean(b.bsc_address,100);
