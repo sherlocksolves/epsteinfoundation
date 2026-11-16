@@ -66,16 +66,9 @@
     <section id="login-card" class="admin-card" style="max-width: 440px; margin: 3rem auto;">
       <h2>Administrator Sign In</h2>
       <p class="muted" style="margin-bottom: 1.2rem;">Enter your credentials to manage homepage content, donors, and volunteer submissions.</p>
-      <form id="login-form">
-        <label>Username
-          <input class="admin-input" name="username" autocomplete="username" required>
-        </label>
-        <label>Password
-          <input class="admin-input" name="password" type="password" autocomplete="current-password" required>
-        </label>
-        <button class="admin-btn" type="submit" style="width: 100%;">Sign In to Console</button>
-        <p id="login-msg" class="muted" role="status"></p>
-      </form>
+      <p class="muted" style="margin-bottom: 1.2rem;">Sign in with the authorized Google account to manage homepage content, donors, and volunteer submissions.</p>
+      <button id="google-sign-in" class="admin-btn" type="button" style="width: 100%;">Continue with Google</button>
+      <p id="login-msg" class="muted" role="status"></p>
     </section>
 
     <!-- Full Admin Dashboard -->
@@ -101,7 +94,7 @@
         <button type="button" class="admin-tab active" data-tab="panel-donors">1. Donors & Leaderboard</button>
         <button type="button" class="admin-tab" data-tab="panel-volunteers">2. Volunteers & Feedback Inbox</button>
         <button type="button" class="admin-tab" data-tab="panel-cms">3. Homepage CMS Control</button>
-        <button type="button" class="admin-tab" data-tab="panel-settings">4. Wallets & Admin Security</button>
+        <button type="button" class="admin-tab" data-tab="panel-settings">4. Wallet Settings</button>
       </nav>
 
       <!-- TAB 1: DONORS & LEADERBOARD CONTROL -->
@@ -286,7 +279,7 @@
         </article>
       </div>
 
-      <!-- TAB 4: WALLETS & ADMIN CREDENTIALS -->
+      <!-- TAB 4: WALLET SETTINGS -->
       <div id="panel-settings" class="tab-panel hidden">
         <article class="admin-card">
           <h2>Official Receiving Wallet Addresses</h2>
@@ -305,25 +298,7 @@
           </form>
         </article>
 
-        <article class="admin-card">
-          <h2>Administrator Login Credentials</h2>
-          <p class="muted" style="margin-bottom: 1rem;">Change your admin username and password. Passwords are salted and hashed with PBKDF2-HMAC-SHA256 (310,000 iterations).</p>
-          <form id="credentials-form" class="admin-grid-2">
-            <label>New Admin Username
-              <input id="new-username" class="admin-input" autocomplete="username" placeholder="Leave blank to keep current username">
-            </label>
-            <label>Current Password *
-              <input id="current-password" type="password" class="admin-input" required autocomplete="current-password">
-            </label>
-            <label>New Password (12+ characters)
-              <input id="new-password" type="password" class="admin-input" minlength="12" autocomplete="new-password" placeholder="At least 12 characters">
-            </label>
-            <div style="grid-column: 1 / -1;">
-              <button class="admin-btn" type="submit">Update Admin Credentials</button>
-              <p id="credentials-msg" class="muted"></p>
-            </div>
-          </form>
-        </article>
+
       </div>
     </section>
 
