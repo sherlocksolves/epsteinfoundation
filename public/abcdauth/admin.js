@@ -385,17 +385,27 @@ async function applySession(session) {
     return;
   }
   token = session.access_token;
-  showDashboard();
+  if (document.getElementById("dashboard").classList.contains("hidden")) showDashboard();
 }
 
 adminAuth.auth.onAuthStateChange((_event, session) => {
-  if (session) {
-    token = session.access_token;
-    if (document.getElementById("dashboard").classList.contains("hidden")) applySession(session);
-  } else {
+  if (!session) {
     token = "";
     showLogin();
+    return;
   }
+
+  if (session.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    token = "";
+    showLogin();
+    msg("login-msg", "This Google account is not authorized for the admin console.", "error");
+    // Run after the auth callback returns to avoid holding Supabase's auth lock.
+    queueMicrotask(() => adminAuth.auth.signOut());
+    return;
+  }
+
+  token = session.access_token;
+  if (document.getElementById("dashboard").classList.contains("hidden")) showDashboard();
 });
 
 const { data: { session } } = await adminAuth.auth.getSession();
