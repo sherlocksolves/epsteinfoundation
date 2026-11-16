@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Epstein Foundation — For Children. | Direct Community Support</title>
+  <meta name="description" content="Epstein Foundation — For Children. An independent community initiative supporting child education, nutrition, and daily care through direct, verifiable contributions.">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="theme-color" content="#070b14">
+
+  <!-- Google Fonts: Cormorant Garamond (Editorial Serif) + Plus Jakarta Sans + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Epstein Foundation">
+  <meta property="og:title" content="Epstein Foundation — For Children.">
+  <meta property="og:description" content="Every child deserves a fair start—safe care, daily nutrition, and the chance to learn. Direct community support with live on-chain verification.">
+  <meta property="og:image" content="assets/banner.jpg">
+  <meta property="og:image:alt" content="Epstein Foundation — For Children.">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@epsteinfnd">
+  <meta name="twitter:title" content="Epstein Foundation — For Children.">
+  <meta name="twitter:description" content="Every child deserves a fair start—safe care, daily nutrition, and the chance to learn. Direct community support.">
+  <meta name="twitter:image" content="assets/banner.jpg">
+
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="apple-touch-icon" href="assets/logo.jpg">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Structured Data (SEO + GEO) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "Epstein Foundation",
+        "alternateName": "Epstein Foundation — For Children.",
+        "slogan": "For Children.",
+        "description": "Independent community-backed initiative supporting child education, daily nutrition, and essential care through direct, verifiable contributions.",
+        "logo": "assets/logo.jpg",
+        "image": "assets/banner.jpg",
+        "sameAs": [
+          "https://www.instagram.com/epsteinfoundationforchildren",
+          "https://x.com/epsteinfnd"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "name": "Epstein Foundation — For Children.",
+        "description": "Direct community support page, volunteer applications, and live verified supporter leaderboard for Epstein Foundation."
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What does Epstein Foundation — For Children. support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Epstein Foundation — For Children. is an independent community initiative focused on supporting children's access to education, daily nutrition, and essential care."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How can supporters contribute or volunteer?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Supporters can contribute directly using Bitcoin (BTC) or BNB Smart Chain (BEP-20), verify their transaction hash on-chain to appear on the live leaderboard, or apply to join as a volunteer directly on the website."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Optional Top Announcement Bar (Controllable from Admin Panel) -->
+  <div id="announcement-bar" class="announcement-bar" style="display: none;">
+    <div class="container announcement-inner">
+      <span class="announcement-dot"></span>
+      <span id="announcement-text">100% of verified contributions go directly toward child education, daily nutrition, and essential care.</span>
+    </div>
+  </div>
+
+  <!-- Sticky Navigation Bar -->
+  <header class="site-nav">
+    <div class="container nav-inner">
+      <a href="#" class="nav-brand">
+        <img src="assets/logo.jpg" alt="Epstein Foundation Logo" class="nav-logo" width="40" height="40">
+        <div class="nav-brand-text">
+          <span id="nav-title" class="nav-title">Epstein Foundation</span>
+          <span id="nav-tagline" class="nav-subtitle">For Children.</span>
+        </div>
+      </a>
+      <nav class="nav-links" aria-label="Primary Navigation">
+        <a href="#mission" class="nav-link">Mission</a>
+        <a href="#support" class="nav-link">Support</a>
+        <a href="#verify" class="nav-link">Verify</a>
+        <a href="#leaderboard" class="nav-link">Leaderboard</a>
+        <a href="#volunteer" class="nav-link">Volunteer</a>
+      </nav>
+      <div class="nav-cta">
+        <a href="#support" class="btn btn-gold btn-sm">Support Now</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Notification Stack -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- 1. EDITORIAL HERO SECTION -->
+    <section class="hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <img src="assets/logo.jpg" alt="Epstein Foundation Emblem" class="hero-logo" width="92" height="92">
+      <div id="hero-badge" class="hero-pill">Direct Community Support</div>
+      <h1 id="hero-title" class="hero-title">Epstein Foundation</h1>
+      <p id="hero-tagline" class="hero-tagline">For Children.</p>
+
+      <!-- Quick Action Buttons & Socials -->
+      <div class="hero-actions">
+        <a href="#support" class="btn btn-gold">
+          <span>Support the Mission</span>
+        </a>
+        <a href="#volunteer" class="btn btn-outline">
+          <span>Join as Volunteer</span>
+        </a>
+      </div>
+
+      <!-- Official Social Channels -->
+      <nav class="social-links" aria-label="Official Social Channels">
+        <a id="social-insta-link" href="https://www.instagram.com/epsteinfoundationforchildren" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="Epstein Foundation on Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          <span>Instagram</span>
+        </a>
+        <a id="social-x-link" href="https://x.com/epsteinfnd" target="_blank" rel="noopener noreferrer" class="social-pill" aria-label="Epstein Foundation on X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          <span>@epsteinfnd</span>
+        </a>
+      </nav>
+
+      <!-- Framed Editorial Banner -->
+      <div class="banner-wrapper">
+        <img id="hero-banner-img" src="assets/banner.jpg" alt="Epstein Foundation — For Children." class="banner-img">
+      </div>
+    </section>
+
+    <!-- 2. IMPACT PILLARS & MISSION STORY -->
+    <section id="mission" class="mission-section">
+      <div id="impact-grid" class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-icon">📚</div>
+          <h3 class="impact-title">Education & Learning</h3>
+          <p class="impact-desc">Books, learning materials, and foundational schooling support so children can build a brighter future.</p>
+        </div>
+        <div class="impact-card">
+          <div class="impact-icon">🍎</div>
+          <h3 class="impact-title">Daily Nutrition</h3>
+          <p class="impact-desc">Consistent, wholesome meals and clean water so no child has to learn or grow on an empty stomach.</p>
+        </div>
+        <div class="impact-card">
+          <div class="impact-icon">🩺</div>
+          <h3 class="impact-title">Health & Safe Care</h3>
+          <p class="impact-desc">Essential healthcare, hygiene supplies, and protective community support for vulnerable children.</p>
+        </div>
+      </div>
+
+      <article class="story-block">
+        <div class="story-header">
+          <span class="section-eyebrow">Our Purpose</span>
+          <h2 id="story-title" class="story-title">Every Child Deserves a Fair Start.</h2>
+          <p id="story-subtitle" class="story-subtitle">Direct, transparent community support—with zero middlemen.</p>
+        </div>
+
+        <div id="story-body" class="story-body">
+          <p>Every child deserves safe care, daily nourishment, and the opportunity to learn and grow with dignity.</p>
+        </div>
+
+        <!-- Campaign Milestone Goal Indicator (Controllable from Admin Panel) -->
+        <div id="goal-container" class="goal-container" style="display: none;">
+          <div class="goal-info">
+            <span id="goal-title" class="goal-title">Current Community Milestone</span>
+            <span id="goal-current" class="goal-current"></span>
+          </div>
+          <div class="progress-track">
+            <div id="goal-progress-fill" class="progress-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 3. DIRECT SUPPORT BOX (BTC + BNB SMART CHAIN) -->
+    <section id="support" class="support-card" aria-label="Direct Crypto Support Options">
+      <div class="support-card-header">
+        <div>
+          <span class="section-eyebrow">Direct On-Chain Patronage</span>
+          <h2 class="section-title">Contribute Directly</h2>
+          <p class="section-subtitle">100% peer-to-peer support with zero platform fees. Choose your preferred network below.</p>
+        </div>
+      </div>
+
+      <nav class="card-tabs" role="tablist">
+        <button id="tab-btc" class="tab-btn tab-btc active" role="tab" aria-selected="true" aria-controls="card-content-area">
+          <svg class="tab-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+            <path d="M16 32C7.163 32 0 24.837 0 16S7.163 0 16 0s16 7.163 16 16-7.163 16-16 16zm4.84-18.06c.307-2.053-1.258-3.158-3.4-3.896l.695-2.784-1.694-.423-.676 2.71c-.445-.111-.903-.217-1.36-.32l.681-2.73-1.693-.423-.695 2.783c-.368-.084-.73-.166-1.08-.252l.002-.008-2.337-.584-.45 1.81s1.256.288 1.23.306c.686.172.81.627.79.988l-.79 3.17c.047.012.108.03.176.056l-.18-.045-1.108 4.442c-.084.208-.297.52-.777.4l-1.232-.308-.452 1.815 2.204.55c.41.103.812.21 1.21.312l-.703 2.82 1.693.422.695-2.787c.463.125.912.24 1.35.348l-.693 2.775 1.694.423.703-2.818c2.89.547 5.062.326 5.976-2.288.736-2.105-.036-3.32-1.558-4.108 1.108-.256 1.943-.986 2.167-2.497zm-3.87 5.46c-.524 2.103-4.067.966-5.216.68l.93-3.73c1.15.287 4.834.856 4.286 3.05zm.526-5.495c-.478 1.916-3.428.943-4.385.704l.844-3.382c.957.24 4.043.688 3.54 2.678z"/>
+          </svg>
+          <span>Bitcoin (BTC)</span>
+        </button>
+        <button id="tab-bsc" class="tab-btn tab-bsc" role="tab" aria-selected="false" aria-controls="card-content-area">
+          <svg class="tab-icon" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+            <path d="M16 32C7.163 32 0 24.837 0 16S7.163 0 16 0s16 7.163 16 16-7.163 16-16 16zm0-24.889l-5.333 5.333 2.513 2.513L16 12.103l2.82 2.854 2.513-2.513L16 7.111zm-8.889 8.889l2.513-2.513 2.82 2.82-2.82 2.82-2.513-2.514V16zm8.889 8.889l-2.82-2.82-2.513 2.513L16 29.916l5.333-5.333-2.513-2.513-2.82 2.82zm8.889-8.889l-2.513 2.514-2.82-2.82 2.82-2.82 2.513 2.513V16zm-6.069 0L16 13.18 13.18 16 16 18.82 18.82 16z"/>
+          </svg>
+          <span>BNB Smart Chain (BEP-20)</span>
+        </button>
+      </nav>
+
+      <div id="card-content-area" class="card-content">
+        <div class="qr-address-grid">
+          <div class="qr-column">
+            <div id="card-qr-slot" class="qr-box" title="Scan with mobile wallet"></div>
+            <span class="qr-caption">Scan QR in any wallet app</span>
+          </div>
+
+          <div class="address-details">
+            <div class="badge-row">
+              <span id="card-network-badge" class="net-pill pill-btc">Mainnet · BIP-21</span>
+              <span class="verified-wallet-tag">✓ Official Foundation Wallet</span>
+            </div>
+
+            <div>
+              <div class="address-label">Official Receiving Address</div>
+              <div id="card-address-text" class="address-box mono">Loading address...</div>
+            </div>
+
+            <div class="action-buttons">
+              <button id="btn-copy-address" class="btn btn-gold" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Copy Wallet Address</span>
+              </button>
+
+              <button id="btn-copy-uri" class="btn btn-secondary" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <span>Copy Payment URI</span>
+              </button>
+            </div>
+
+            <p id="card-network-notice" class="network-notice">
+              Send only native Bitcoin (BTC) to this address. On-chain confirmations typically take 10–30 minutes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. TWO-COLUMN INTERACTIVE GRID: VERIFY CONTRIBUTION + LEADERBOARD -->
+    <div class="interactive-split">
+      <!-- ON-CHAIN VERIFICATION FORM -->
+      <section id="verify" class="verify-section" aria-label="Transaction Verification">
+        <div class="section-header">
+          <span class="section-eyebrow">Step 2 · Instant Recognition</span>
+          <h2 id="form-section-title" class="section-title">Verify Your Contribution</h2>
+          <p id="form-section-subtitle" class="section-subtitle">Submit your transaction hash to verify on-chain and appear on the live leaderboard.</p>
+        </div>
+
+        <form id="verify-tx-form" class="form-grid">
+          <div class="form-group">
+            <label for="verify-network-select" class="form-label">Select Network</label>
+            <select id="verify-network-select" class="form-control">
+              <option value="btc">Bitcoin (BTC)</option>
+              <option value="bsc">BNB Smart Chain (BEP-20)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tx-hash-input" class="form-label">Transaction Hash / TXID</label>
+            <input id="tx-hash-input" type="text" class="form-control mono" placeholder="Enter 64-char Bitcoin TXID" required autocomplete="off" spellcheck="false">
+            <span id="tx-hash-help" class="form-help">Paste the transaction ID from your wallet or block explorer.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="toggle-wrapper">
+              <span class="toggle-switch">
+                <input type="checkbox" id="anon-toggle" checked>
+                <span class="slider"></span>
+              </span>
+              <span id="anon-toggle-label" class="toggle-label">Stay Anonymous on Public Leaderboard</span>
+            </label>
+          </div>
+
+          <div id="display-name-group" class="form-group" style="display: none;">
+            <label for="display-name-input" class="form-label">Your Name / Public Handle</label>
+            <input id="display-name-input" type="text" class="form-control" placeholder="e.g. Aarav S. / Community Patron" maxlength="50">
+            <span class="form-help">Shown publicly on the Supporter Leaderboard.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="note-input" class="form-label">Private Note to the Team (Optional)</label>
+            <input id="note-input" type="text" class="form-control" placeholder="Optional message or dedication" maxlength="250">
+          </div>
+
+          <div>
+            <button id="btn-verify-submit" type="submit" class="btn btn-gold" style="width: 100%;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Verify & Acknowledge Contribution</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- LIVE SUPPORTER LEADERBOARD -->
+      <section id="leaderboard" class="leaderboard-section" aria-label="Supporter Leaderboard">
+        <div class="section-header leaderboard-header">
+          <div>
+            <span class="section-eyebrow">Community Roll of Honor</span>
+            <h2 id="leaderboard-title" class="section-title">Verified Supporter Leaderboard</h2>
+            <p id="leaderboard-subtitle" class="section-subtitle">Real-time verified contributions.</p>
+          </div>
+          <div class="supporter-counter-badge">
+            <span>Verified Patrons</span>
+            <strong id="stats-total-count" class="mono">0</strong>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 68px;">Rank</th>
+                <th scope="col">Supporter</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Network</th>
+                <th scope="col">Status</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+
+        <div id="leaderboard-empty" class="empty-state">
+          <p>No contributions recorded yet. Be the first supporter to verify!</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- 5. JOIN AS VOLUNTEER & COMMUNITY FEEDBACK SECTION -->
+    <section id="volunteer" class="volunteer-section" aria-label="Join as a Volunteer or Send Feedback">
+      <div class="volunteer-grid">
+        <div class="volunteer-info">
+          <span class="section-eyebrow">Get Involved</span>
+          <h2 id="volunteer-title" class="section-title">Join as a Volunteer or Share Feedback</h2>
+          <p id="volunteer-subtitle" class="section-subtitle">
+            Beyond financial contributions, our mission grows through dedicated volunteers, educators, medical professionals, and community voices.
+          </p>
+
+          <ul class="volunteer-perks">
+            <li>
+              <span class="perk-badge">🤝</span>
+              <div>
+                <strong>Volunteer on the Ground or Remotely</strong>
+                <p>Assist with child education drives, nutrition distribution, awareness, or digital outreach.</p>
+              </div>
+            </li>
+            <li>
+              <span class="perk-badge">💡</span>
+              <div>
+                <strong>Share Ideas & Community Feedback</strong>
+                <p>Have a suggestion, partnership idea, or feedback for Epstein Foundation? Send it directly to our team.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <form id="volunteer-form" class="volunteer-form-card">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="vol-type" class="form-label">How would you like to connect?</label>
+              <select id="vol-type" class="form-control" required>
+                <option value="volunteer">Join as a Volunteer</option>
+                <option value="feedback">Share Feedback / Suggestion</option>
+                <option value="partner">Partnership / Collaboration</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="vol-name" class="form-label">Your Full Name *</label>
+              <input id="vol-name" type="text" class="form-control" placeholder="Enter your name" required maxlength="100">
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="vol-contact" class="form-label">Email or Phone / Social Handle *</label>
+              <input id="vol-contact" type="text" class="form-control" placeholder="email@example.com or @handle" required maxlength="120">
+            </div>
+            <div class="form-group">
+              <label for="vol-location" class="form-label">City / Country (Optional)</label>
+              <input id="vol-location" type="text" class="form-control" placeholder="e.g. Mumbai, India / Remote" maxlength="100">
+            </div>
+          </div>
+
+          <div class="form-group" id="vol-role-group">
+            <label for="vol-role" class="form-label">Area of Interest / Skills</label>
+            <select id="vol-role" class="form-control">
+              <option value="Child Education & Tutoring">Child Education & Tutoring</option>
+              <option value="Nutrition & Community Distribution">Nutrition & Community Distribution</option>
+              <option value="Healthcare & Child Wellbeing">Healthcare & Child Wellbeing</option>
+              <option value="Social Media, Design & Outreach">Social Media, Design & Outreach</option>
+              <option value="General Volunteering / Feedback">General Volunteering / Feedback</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="vol-message" class="form-label">Your Message *</label>
+            <textarea id="vol-message" class="form-control" rows="4" placeholder="Tell us how you'd like to help or share your thoughts with our team..." required maxlength="1200"></textarea>
+          </div>
+
+          <button id="btn-volunteer-submit" type="submit" class="btn btn-gold" style="width: 100%;">
+            <span>Submit to Epstein Foundation Team</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 6. EDITORIAL FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.jpg" alt="Epstein Foundation" class="footer-logo" width="44" height="44">
+        <div>
+          <strong class="footer-title">Epstein Foundation</strong>
+          <p class="footer-tagline">For Children.</p>
+        </div>
+      </div>
+
+      <div class="footer-social">
+        <a href="https://www.instagram.com/epsteinfoundationforchildren" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://x.com/epsteinfnd" target="_blank" rel="noopener noreferrer">X (@epsteinfnd)</a>
+        <span aria-hidden="true">·</span>
+        <a href="#support">Direct Support</a>
+        <span aria-hidden="true">·</span>
+        <a href="#volunteer">Volunteer</a>
+      </div>
+
+      <p id="footer-notice" class="footer-notice">Epstein Foundation — For Children. Direct community support with real-time on-chain verification.</p>
+      <p id="footer-copyright" class="footer-copyright">© 2026 Epstein Foundation. For Children.</p>
+      <p id="footer-disclaimer" class="footer-disclaimer">Cryptocurrency transactions are final and immutable. Please verify the receiving address and network before sending.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/qr-generator.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

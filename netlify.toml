@@ -1,0 +1,8 @@
+[[redirects]]
+  from = "/abcdauth"
+  to = "/abcdauth/index.html"
+  status = 200
+[[redirects]]
+  from = "/abcdauth/"
+  to = "/abcdauth/index.html"
+  status = 200

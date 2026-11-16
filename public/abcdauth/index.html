@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <title>Console</title>
+  <link rel="icon" type="image/jpeg" href="../assets/logo.jpg">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .admin-wrap { max-width: 1200px; margin: 2.5rem auto 4rem; padding: 0 1.25rem; }
+    .admin-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.75rem; }
+    .admin-brand { display: flex; align-items: center; gap: 0.9rem; }
+    .admin-brand img { width: 48px; height: 48px; border-radius: 12px; border: 1px solid var(--border-gold); object-fit: cover; }
+    .admin-brand h1 { font-family: var(--font-serif); font-size: 1.85rem; line-height: 1.1; }
+    .admin-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .kpi-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-top: 2px solid var(--border-gold); border-radius: var(--radius-md); padding: 1.25rem 1.4rem; }
+    .kpi-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .kpi-value { font-family: var(--font-mono); font-size: 1.75rem; font-weight: 700; color: var(--gold-light); }
+    .admin-nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; }
+    .admin-tab { padding: 0.6rem 1.1rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); color: var(--text-secondary); font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s ease; }
+    .admin-tab.active, .admin-tab:hover { background: var(--bg-surface-soft); border-color: var(--gold-primary); color: var(--gold-light); }
+    .admin-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-card); }
+    .admin-card h2 { font-family: var(--font-serif); font-size: 1.55rem; margin-bottom: 0.35rem; color: var(--text-primary); }
+    .admin-card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--gold-light); }
+    .admin-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    .admin-input, .admin-textarea, .admin-select { width: 100%; padding: 0.75rem 0.9rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: rgba(7, 11, 20, 0.9); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; margin-top: 0.3rem; margin-bottom: 0.85rem; }
+    .admin-input:focus, .admin-textarea:focus, .admin-select:focus { outline: none; border-color: var(--gold-primary); }
+    .admin-btn { padding: 0.68rem 1.15rem; border-radius: var(--radius-sm); border: 1px solid transparent; cursor: pointer; background: linear-gradient(135deg, var(--gold-light), var(--gold-primary)); color: #090d16; font-weight: 700; font-size: 0.86rem; transition: all 0.18s ease; }
+    .admin-btn:hover { filter: brightness(1.07); }
+    .admin-btn.secondary { background: var(--bg-surface-elevated); color: var(--text-primary); border-color: var(--border-subtle); font-weight: 600; }
+    .admin-btn.danger { background: rgba(244, 63, 94, 0.15); color: #fda4af; border-color: rgba(244, 63, 94, 0.35); }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .admin-table th, .admin-table td { padding: 0.8rem 0.65rem; border-bottom: 1px solid var(--border-subtle); text-align: left; vertical-align: middle; }
+    .admin-table th { font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+    .table-scroll { overflow-x: auto; }
+    .muted { color: var(--text-muted); font-size: 0.86rem; }
+    .hidden { display: none !important; }
+    .error { color: #fda4af; font-size: 0.86rem; margin-top: 0.5rem; }
+    .success { color: #6ee7b7; font-size: 0.86rem; margin-top: 0.5rem; }
+    .admin-actions { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+    .small { font-size: 0.78rem; overflow-wrap: anywhere; }
+    .pill-type { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 5px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; background: var(--bg-surface-soft); color: var(--gold-light); border: 1px solid var(--border-gold); }
+    .inline-edit-input { padding: 0.35rem 0.55rem; border-radius: 6px; border: 1px solid var(--border-subtle); background: #070b14; color: #fff; font-size: 0.84rem; width: 155px; }
+  </style>
+</head>
+<body>
+  <main class="admin-wrap">
+    <!-- Top Header -->
+    <div class="admin-top">
+      <div class="admin-brand">
+        <img src="../assets/logo.jpg" alt="Logo">
+        <div>
+          <span class="section-eyebrow">Private Command Center</span>
+          <h1>Epstein Foundation · Admin Console</h1>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <a href="../" target="_blank" class="admin-btn secondary" style="text-decoration:none;">View Live Website ↗</a>
+        <button id="refresh-btn" class="admin-btn secondary hidden" type="button">↻ Refresh Data</button>
+        <button id="logout" class="admin-btn secondary hidden" type="button">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Login Screen -->
+    <section id="login-card" class="admin-card" style="max-width: 440px; margin: 3rem auto;">
+      <h2>Administrator Sign In</h2>
+      <p class="muted" style="margin-bottom: 1.2rem;">Enter your credentials to manage homepage content, donors, and volunteer submissions.</p>
+      <form id="login-form">
+        <label>Username
+          <input class="admin-input" name="username" autocomplete="username" required>
+        </label>
+        <label>Password
+          <input class="admin-input" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="admin-btn" type="submit" style="width: 100%;">Sign In to Console</button>
+        <p id="login-msg" class="muted" role="status"></p>
+      </form>
+    </section>
+
+    <!-- Full Admin Dashboard -->
+    <section id="dashboard" class="hidden">
+      <!-- KPI Overview Cards -->
+      <div class="admin-kpi-grid">
+        <article class="kpi-card">
+          <div class="kpi-label">Public Leaderboard Patrons</div>
+          <div id="public-count" class="kpi-value">0</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Verified On-Chain Logs</div>
+          <div id="private-count" class="kpi-value">0</div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Volunteer & Feedback Inbox</div>
+          <div id="volunteer-count" class="kpi-value">0</div>
+        </article>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="admin-nav-tabs" aria-label="Console Sections">
+        <button type="button" class="admin-tab active" data-tab="panel-donors">1. Donors & Leaderboard</button>
+        <button type="button" class="admin-tab" data-tab="panel-volunteers">2. Volunteers & Feedback Inbox</button>
+        <button type="button" class="admin-tab" data-tab="panel-cms">3. Homepage CMS Control</button>
+        <button type="button" class="admin-tab" data-tab="panel-settings">4. Wallets & Admin Security</button>
+      </nav>
+
+      <!-- TAB 1: DONORS & LEADERBOARD CONTROL -->
+      <div id="panel-donors" class="tab-panel">
+        <!-- Add Manual Donor / Supporter -->
+        <article class="admin-card">
+          <h2>Add Supporter / Donation to Leaderboard</h2>
+          <p class="muted" style="margin-bottom: 1rem;">Manually recognize a direct donor or add a verified supporter to the live homepage leaderboard.</p>
+          <form id="add-supporter-form" class="admin-grid-2">
+            <label>Supporter Display Name *
+              <input id="sup-name" class="admin-input" placeholder="e.g. Rohan Verma or Anonymous Supporter" required>
+            </label>
+            <label>Display Amount *
+              <input id="sup-amount" class="admin-input" placeholder="e.g. 0.025 BTC or 1.5 BNB or $500 USDT" required>
+            </label>
+            <label>Network Badge
+              <select id="sup-network" class="admin-select">
+                <option value="BTC">Bitcoin (BTC)</option>
+                <option value="BEP-20">BNB Smart Chain (BEP-20)</option>
+              </select>
+            </label>
+            <label>Internal Note / Reference (Optional)
+              <input id="sup-note" class="admin-input" placeholder="Optional note or TXID">
+            </label>
+            <div style="grid-column: 1 / -1;">
+              <button class="admin-btn" type="submit">+ Add Supporter to Live Leaderboard</button>
+              <span id="sup-msg" class="muted" style="margin-left: 0.75rem;"></span>
+            </div>
+          </form>
+        </article>
+
+        <!-- Public Leaderboard Moderation & Name Editor -->
+        <article class="admin-card">
+          <h2>Public Supporter Leaderboard (Edit Names, Hide, or Remove)</h2>
+          <p class="muted" style="margin-bottom: 1rem;">Edit any donor's public name or amount directly inline, hide/restore entries, or delete them.</p>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Supporter Name (Editable)</th>
+                  <th>Displayed Amount (Editable)</th>
+                  <th>Network</th>
+                  <th>Visibility</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="public-rows"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- Private On-Chain Contribution Audit Logs -->
+        <article class="admin-card">
+          <h2>Private On-Chain Verification Logs (Confidential)</h2>
+          <p class="muted" style="margin-bottom: 1rem;">Contains sender wallet addresses, supporter notes, and full transaction hashes.</p>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Verified Time</th>
+                  <th>Network & Amount</th>
+                  <th>Sender / Donor Info</th>
+                  <th>Recipient Wallet</th>
+                  <th>TX Hash / ID</th>
+                  <th>Supporter Note</th>
+                </tr>
+              </thead>
+              <tbody id="private-rows"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+
+      <!-- TAB 2: VOLUNTEER & FEEDBACK INBOX -->
+      <div id="panel-volunteers" class="tab-panel hidden">
+        <article class="admin-card">
+          <h2>Volunteer Applications & Community Feedback Inbox</h2>
+          <p class="muted" style="margin-bottom: 1rem;">Every submission from the "Join as a Volunteer or Share Feedback" form on the homepage appears here in real time.</p>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Submitted</th>
+                  <th>Type</th>
+                  <th>Full Name</th>
+                  <th>Contact (Email / Phone / Handle)</th>
+                  <th>City / Location</th>
+                  <th>Interest / Role</th>
+                  <th>Message</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="volunteer-rows"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+
+      <!-- TAB 3: HOMEPAGE CMS EDITOR -->
+      <div id="panel-cms" class="tab-panel hidden">
+        <article class="admin-card">
+          <h2>Homepage Live Content Controller (CMS)</h2>
+          <p class="muted" style="margin-bottom: 1.2rem;">Control every headline, announcement bar, mission paragraph, campaign milestone bar, and social link on the live homepage without touching code.</p>
+          <form id="cms-form">
+            <h3>1. Top Announcement Banner</h3>
+            <div class="admin-grid-2">
+              <label style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0;">
+                <input type="checkbox" id="cms-ann-enabled" style="width:18px;height:18px;">
+                <span>Show Top Announcement Bar on Homepage</span>
+              </label>
+              <label>Announcement Banner Text
+                <input id="cms-ann-text" class="admin-input" placeholder="100% of verified contributions go directly toward child education, daily nutrition, and essential care.">
+              </label>
+            </div>
+
+            <h3 style="margin-top: 1rem;">2. Hero Section & Branding</h3>
+            <div class="admin-grid-2">
+              <label>Foundation / Project Title
+                <input id="cms-title" class="admin-input" placeholder="Epstein Foundation" required>
+              </label>
+              <label>Hero Tagline
+                <input id="cms-tagline" class="admin-input" placeholder="For Children." required>
+              </label>
+              <label>Hero Badge Pill
+                <input id="cms-badge" class="admin-input" placeholder="Direct Community Support">
+              </label>
+              <label>Banner Image Path or URL
+                <input id="cms-banner" class="admin-input" placeholder="assets/banner.jpg">
+              </label>
+            </div>
+
+            <h3 style="margin-top: 1rem;">3. Mission Story & Paragraphs</h3>
+            <div class="admin-grid-2">
+              <label>Story Headline
+                <input id="cms-story-title" class="admin-input" placeholder="Every Child Deserves a Fair Start.">
+              </label>
+              <label>Story Subtitle
+                <input id="cms-story-subtitle" class="admin-input" placeholder="Direct, transparent community support—with zero middlemen.">
+              </label>
+            </div>
+            <label>Story Paragraphs (One paragraph per line)
+              <textarea id="cms-story-body" class="admin-textarea" rows="5" placeholder="Enter each paragraph on a new line..."></textarea>
+            </label>
+
+            <h3 style="margin-top: 1rem;">4. Optional Campaign Milestone Progress Bar</h3>
+            <div class="admin-grid-2">
+              <label style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0;">
+                <input type="checkbox" id="cms-goal-enabled" style="width:18px;height:18px;">
+                <span>Enable Milestone Progress Bar on Homepage</span>
+              </label>
+              <label>Milestone Title
+                <input id="cms-goal-title" class="admin-input" placeholder="Current Community Milestone">
+              </label>
+              <label>Progress Display Label
+                <input id="cms-goal-display" class="admin-input" placeholder="e.g. 1.25 / 5.00 BTC or 65% Funded">
+              </label>
+              <label>Progress Percentage (0–100)
+                <input id="cms-goal-pct" type="number" min="0" max="100" class="admin-input" placeholder="65">
+              </label>
+            </div>
+
+            <h3 style="margin-top: 1rem;">5. Social Links & Footer</h3>
+            <div class="admin-grid-2">
+              <label>Instagram URL
+                <input id="cms-insta" class="admin-input" placeholder="https://www.instagram.com/epsteinfoundationforchildren">
+              </label>
+              <label>X (Twitter) URL
+                <input id="cms-x" class="admin-input" placeholder="https://x.com/epsteinfnd">
+              </label>
+              <label>Footer Notice
+                <input id="cms-footer-notice" class="admin-input" placeholder="Epstein Foundation — For Children. Direct community support with real-time on-chain verification.">
+              </label>
+              <label>Copyright Line
+                <input id="cms-copyright" class="admin-input" placeholder="© 2026 Epstein Foundation. For Children.">
+              </label>
+            </div>
+
+            <button class="admin-btn" type="submit">Save & Publish Homepage Changes</button>
+            <p id="cms-msg" class="muted"></p>
+          </form>
+        </article>
+      </div>
+
+      <!-- TAB 4: WALLETS & ADMIN CREDENTIALS -->
+      <div id="panel-settings" class="tab-panel hidden">
+        <article class="admin-card">
+          <h2>Official Receiving Wallet Addresses</h2>
+          <p class="muted" style="margin-bottom: 1rem;">Updates both the public QR codes/addresses on the homepage and the target addresses verified by on-chain Edge Functions.</p>
+          <form id="settings-form" class="admin-grid-2">
+            <label>Bitcoin (BTC Mainnet) Address
+              <input id="btc-address" class="admin-input mono" required>
+            </label>
+            <label>BNB Smart Chain (BEP-20 / Chain ID 56) Address
+              <input id="bsc-address" class="admin-input mono" required>
+            </label>
+            <div style="grid-column: 1 / -1;">
+              <button class="admin-btn" type="submit">Save Receiving Addresses</button>
+              <p id="settings-msg" class="muted"></p>
+            </div>
+          </form>
+        </article>
+
+        <article class="admin-card">
+          <h2>Administrator Login Credentials</h2>
+          <p class="muted" style="margin-bottom: 1rem;">Change your admin username and password. Passwords are salted and hashed with PBKDF2-HMAC-SHA256 (310,000 iterations).</p>
+          <form id="credentials-form" class="admin-grid-2">
+            <label>New Admin Username
+              <input id="new-username" class="admin-input" autocomplete="username" placeholder="Leave blank to keep current username">
+            </label>
+            <label>Current Password *
+              <input id="current-password" type="password" class="admin-input" required autocomplete="current-password">
+            </label>
+            <label>New Password (12+ characters)
+              <input id="new-password" type="password" class="admin-input" minlength="12" autocomplete="new-password" placeholder="At least 12 characters">
+            </label>
+            <div style="grid-column: 1 / -1;">
+              <button class="admin-btn" type="submit">Update Admin Credentials</button>
+              <p id="credentials-msg" class="muted"></p>
+            </div>
+          </form>
+        </article>
+      </div>
+    </section>
+
+    <p id="global-msg" role="status" class="muted"></p>
+  </main>
+  <script type="module" src="./admin.js"></script>
+</body>
+</html>

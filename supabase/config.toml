@@ -1,0 +1,10 @@
+project_id = "elndnwiujkghclblnuyl"
+
+[functions.get-public-config]
+verify_jwt = false
+[functions.verify-btc]
+verify_jwt = false
+[functions.verify-bsc]
+verify_jwt = false
+[functions.admin-api]
+verify_jwt = false
