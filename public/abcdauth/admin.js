@@ -1,9 +1,13 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "../js/supabase-init.js";
 import { siteConfig } from "../js/siteConfig.js";
 
 const endpoint = `${SUPABASE_URL}/functions/v1/admin-api`;
-let token = sessionStorage.getItem("ds_admin_token") || "";
-let username = sessionStorage.getItem("ds_admin_user") || "";
+const adminAuth = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" }
+});
+const ADMIN_EMAIL = "viratanand1221@gmail.com";
+let token = "";
 
 async function api(action, { method = "GET", body } = {}) {
   const r = await fetch(`${endpoint}?action=${encodeURIComponent(action)}`, {
@@ -55,28 +59,18 @@ function showLogin() {
   $("refresh-btn").classList.add("hidden");
 }
 
-$("login-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const f = new FormData(e.currentTarget);
-  try {
-    const j = await api("login", {
-      method: "POST",
-      body: { username: f.get("username"), password: f.get("password") }
-    });
-    token = j.token;
-    username = j.username;
-    sessionStorage.setItem("ds_admin_token", token);
-    sessionStorage.setItem("ds_admin_user", username);
-    showDashboard();
-  } catch (err) {
-    msg("login-msg", err.message, "error");
-  }
+$("google-sign-in").addEventListener("click", async () => {
+  msg("login-msg", "Redirecting to Google…");
+  const { error } = await adminAuth.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${window.location.origin}/abcdauth/` }
+  });
+  if (error) msg("login-msg", error.message, "error");
 });
 
-$("logout").onclick = () => {
+$("logout").onclick = async () => {
+  await adminAuth.auth.signOut();
   token = "";
-  sessionStorage.removeItem("ds_admin_token");
-  sessionStorage.removeItem("ds_admin_user");
   showLogin();
 };
 
@@ -379,30 +373,30 @@ $("settings-form").addEventListener("submit", async (e) => {
   }
 });
 
-// Update Admin Credentials
-$("credentials-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  try {
-    const j = await api("change-credentials", {
-      method: "POST",
-      body: {
-        username: $("new-username").value.trim() || username,
-        currentPassword: $("current-password").value,
-        password: $("new-password").value
-      }
-    });
-    token = j.token;
-    username = j.username;
-    sessionStorage.setItem("ds_admin_token", token);
-    sessionStorage.setItem("ds_admin_user", username);
-    $("current-password").value = "";
-    $("new-password").value = "";
-    $("new-username").value = "";
-    msg("credentials-msg", "✓ Admin credentials updated.", "success");
-  } catch (err) {
-    msg("credentials-msg", err.message, "error");
+async function applySession(session) {
+  const email = session?.user?.email?.toLowerCase();
+  if (!session || email !== ADMIN_EMAIL) {
+    token = "";
+    showLogin();
+    if (session) {
+      msg("login-msg", "This Google account is not authorized for the admin console.", "error");
+      await adminAuth.auth.signOut();
+    }
+    return;
+  }
+  token = session.access_token;
+  showDashboard();
+}
+
+adminAuth.auth.onAuthStateChange((_event, session) => {
+  if (session) {
+    token = session.access_token;
+    if (document.getElementById("dashboard").classList.contains("hidden")) applySession(session);
+  } else {
+    token = "";
+    showLogin();
   }
 });
 
-if (token) showDashboard();
-else showLogin();
+const { data: { session } } = await adminAuth.auth.getSession();
+await applySession(session);
