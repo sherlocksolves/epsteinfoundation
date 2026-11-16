@@ -1,4 +1,3 @@
--- Volunteer and community feedback submissions.
 create table if not exists public.volunteer_submissions (
   id uuid primary key default gen_random_uuid(),
   submission_type text not null default 'volunteer',
@@ -10,5 +9,18 @@ create table if not exists public.volunteer_submissions (
   created_at timestamptz not null default now()
 );
 alter table public.volunteer_submissions enable row level security;
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname='public'
+      and tablename='volunteer_submissions'
+      and policyname='volunteer_submissions_deny_anon'
+  ) then
+    create policy volunteer_submissions_deny_anon
+      on public.volunteer_submissions for all to anon
+      using (false) with check (false);
+  end if;
+end $$;
 revoke all on public.volunteer_submissions from anon, authenticated;
 grant all on public.volunteer_submissions to service_role;
