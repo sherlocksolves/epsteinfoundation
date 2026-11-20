@@ -151,18 +151,23 @@ $("login-form").addEventListener("submit", async (e) => {
   const submitBtn = $("login-submit-btn") || e.currentTarget.querySelector("button[type=submit]");
   await withButtonLoading(submitBtn, async () => {
     const f = new FormData(e.currentTarget);
+    let u = (f.get("username") || "").trim();
+    if (u.toLowerCase() === "admin") u = "Admin";
+    const p = f.get("password") || "";
     try {
       const j = await api("login", {
         method: "POST",
-        body: { username: f.get("username"), password: f.get("password") }
+        body: { username: u, password: p }
       });
       token = j.token;
       username = j.username;
       sessionStorage.setItem("ds_admin_token", token);
       sessionStorage.setItem("ds_admin_user", username);
       showDashboard();
+      showAdminBanner(`Signed in as ${username}`, "success", 4000);
     } catch (err) {
       msg("login-msg", err.message, "error");
+      showAdminBanner(err.message, "error", 5000);
     }
   });
 });
