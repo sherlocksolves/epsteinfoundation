@@ -82,6 +82,9 @@
 </head>
 <body>
 
+  <!-- Accessible Skip Link -->
+  <a href="#mission" class="skip-link">Skip to main content</a>
+
   <!-- Optional Top Announcement Bar (Controllable from Admin Panel) -->
   <div id="announcement-bar" class="announcement-bar" style="display: none;">
     <div class="container announcement-inner">
@@ -110,7 +113,30 @@
       <div class="nav-cta">
         <a href="#support" class="btn btn-gold btn-sm">Support Now</a>
       </div>
+      <!-- Responsive Mobile Hamburger Toggle (< 768px) -->
+      <button id="mobile-menu-btn" class="nav-toggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-drawer">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
     </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-drawer" class="mobile-drawer" aria-hidden="true">
+      <div class="mobile-drawer-content">
+        <nav class="mobile-nav-links" aria-label="Mobile Navigation">
+          <a href="#mission" class="mobile-nav-link">Mission</a>
+          <a href="#support" class="mobile-nav-link">Support</a>
+          <a href="#verify" class="mobile-nav-link">Verify</a>
+          <a href="#leaderboard" class="mobile-nav-link">Leaderboard</a>
+          <a href="#volunteer" class="mobile-nav-link">Volunteer</a>
+        </nav>
+        <div class="mobile-nav-cta">
+          <a href="#support" class="btn btn-gold btn-sm" style="width: 100%; text-align: center; justify-content: center; display: flex;">Support Now</a>
+        </div>
+      </div>
+    </div>
+    <div id="drawer-backdrop" class="drawer-backdrop" aria-hidden="true"></div>
   </header>
 
   <!-- Toast Notification Stack -->
@@ -249,7 +275,7 @@
             </div>
 
             <div class="action-buttons">
-              <button id="btn-copy-address" class="btn btn-gold" type="button">
+              <button id="btn-copy-address" class="btn btn-gold" type="button" disabled aria-label="Copy wallet address">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -257,7 +283,7 @@
                 <span>Copy Wallet Address</span>
               </button>
 
-              <button id="btn-copy-uri" class="btn btn-secondary" type="button">
+              <button id="btn-copy-uri" class="btn btn-secondary" type="button" disabled aria-label="Copy payment URI">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                   <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
@@ -297,6 +323,7 @@
             <label for="tx-hash-input" class="form-label">Transaction Hash / TXID</label>
             <input id="tx-hash-input" type="text" class="form-control mono" placeholder="Enter 64-char Bitcoin TXID" required autocomplete="off" spellcheck="false">
             <span id="tx-hash-help" class="form-help">Paste the transaction ID from your wallet or block explorer.</span>
+            <span id="tx-hash-error" class="field-error" style="display: none;" role="alert"></span>
           </div>
 
           <div class="form-group">
@@ -362,7 +389,12 @@
           </table>
         </div>
 
-        <div id="leaderboard-empty" class="empty-state">
+        <!-- Leaderboard Loading State (Prevents FOEC) -->
+        <div id="leaderboard-loading" class="empty-state">
+          <p><span class="spinner"></span> Loading verified contributions...</p>
+        </div>
+
+        <div id="leaderboard-empty" class="empty-state" style="display: none;">
           <p>No contributions recorded yet. Be the first supporter to verify!</p>
         </div>
       </section>
@@ -409,6 +441,7 @@
             <div class="form-group">
               <label for="vol-name" class="form-label">Your Full Name *</label>
               <input id="vol-name" type="text" class="form-control" placeholder="Enter your name" required maxlength="100">
+              <span id="vol-name-error" class="field-error" style="display: none;" role="alert"></span>
             </div>
           </div>
 
@@ -416,6 +449,7 @@
             <div class="form-group">
               <label for="vol-contact" class="form-label">Email or Phone / Social Handle *</label>
               <input id="vol-contact" type="text" class="form-control" placeholder="email@example.com or @handle" required maxlength="120">
+              <span id="vol-contact-error" class="field-error" style="display: none;" role="alert"></span>
             </div>
             <div class="form-group">
               <label for="vol-location" class="form-label">City / Country (Optional)</label>
@@ -437,6 +471,7 @@
           <div class="form-group">
             <label for="vol-message" class="form-label">Your Message *</label>
             <textarea id="vol-message" class="form-control" rows="4" placeholder="Tell us how you'd like to help or share your thoughts with our team..." required maxlength="1200"></textarea>
+            <span id="vol-message-error" class="field-error" style="display: none;" role="alert"></span>
           </div>
 
           <button id="btn-volunteer-submit" type="submit" class="btn btn-gold" style="width: 100%;">

@@ -198,6 +198,12 @@ function renderCryptoCard() {
       : `<p class="mono">${escapeHtml(c.address)}</p>`;
   }
 
+  // Enable copy buttons now that valid addresses are loaded
+  const btnCopyAddr = document.getElementById("btn-copy-address");
+  const btnCopyUri = document.getElementById("btn-copy-uri");
+  if (btnCopyAddr) btnCopyAddr.disabled = false;
+  if (btnCopyUri) btnCopyUri.disabled = false;
+
   document.getElementById("tab-btc")?.classList.toggle("active", isBtc);
   document.getElementById("tab-bsc")?.classList.toggle("active", !isBtc);
 
@@ -209,6 +215,7 @@ function renderCryptoCard() {
 }
 
 function setupEventListeners() {
+  // Network tab switching
   document.getElementById("tab-btc")?.addEventListener("click", () => {
     activeNetwork = "btc";
     renderCryptoCard();
@@ -218,12 +225,17 @@ function setupEventListeners() {
     renderCryptoCard();
   });
 
-  document.getElementById("btn-copy-address")?.addEventListener("click", () =>
-    copyToClipboard(document.getElementById("card-address-text").textContent, "Wallet address copied!")
-  );
-  document.getElementById("btn-copy-uri")?.addEventListener("click", () => {
+  // Copy buttons with inline "✓ Copied!" feedback
+  const btnCopyAddr = document.getElementById("btn-copy-address");
+  btnCopyAddr?.addEventListener("click", () => {
+    const text = document.getElementById("card-address-text")?.textContent || "";
+    copyToClipboard(text, "Wallet address copied!", btnCopyAddr);
+  });
+
+  const btnCopyUri = document.getElementById("btn-copy-uri");
+  btnCopyUri?.addEventListener("click", () => {
     const c = activeNetwork === "btc" ? serverConfig.btc : serverConfig.bsc;
-    copyToClipboard(c.qrUri || c.address, "Payment URI copied!");
+    copyToClipboard(c.qrUri || c.address, "Payment URI copied!", btnCopyUri);
   });
 
   document.getElementById("verify-network-select")?.addEventListener("change", (e) => {
@@ -244,6 +256,99 @@ function setupEventListeners() {
     }
   });
 
+  // Responsive Mobile Navigation Drawer Controls
+  const menuBtn = document.getElementById("mobile-menu-btn");
+  const drawer = document.getElementById("mobile-drawer");
+  const backdrop = document.getElementById("drawer-backdrop");
+
+  const closeDrawer = () => {
+    if (!drawer) return;
+    drawer.classList.remove("open");
+    drawer.setAttribute("aria-hidden", "true");
+    backdrop?.classList.remove("active");
+    backdrop?.setAttribute("aria-hidden", "true");
+    menuBtn?.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+  };
+
+  const openDrawer = () => {
+    if (!drawer) return;
+    drawer.classList.add("open");
+    drawer.setAttribute("aria-hidden", "false");
+    backdrop?.classList.add("active");
+    backdrop?.setAttribute("aria-hidden", "false");
+    menuBtn?.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+  };
+
+  menuBtn?.addEventListener("click", () => {
+    const isOpen = drawer?.classList.contains("open");
+    if (isOpen) closeDrawer();
+    else openDrawer();
+  });
+
+  backdrop?.addEventListener("click", closeDrawer);
+
+  document.querySelectorAll(".mobile-nav-link, .mobile-nav-cta a").forEach((link) => {
+    link.addEventListener("click", closeDrawer);
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && drawer?.classList.contains("open")) {
+      closeDrawer();
+    }
+  });
+
+  // Dynamic Volunteer / Feedback Form Adaptation
+  const volTypeSelect = document.getElementById("vol-type");
+  const volRoleGroup = document.getElementById("vol-role-group");
+  const volMessageInput = document.getElementById("vol-message");
+
+  volTypeSelect?.addEventListener("change", () => {
+    const val = volTypeSelect.value;
+    if (val === "feedback") {
+      if (volRoleGroup) volRoleGroup.style.display = "none";
+      if (volMessageInput) {
+        volMessageInput.placeholder = "Share your thoughts, suggestions, or feedback with the Epstein Foundation team...";
+      }
+    } else if (val === "partner") {
+      if (volRoleGroup) volRoleGroup.style.display = "flex";
+      if (volMessageInput) {
+        volMessageInput.placeholder = "Tell us about your organization and how we can collaborate to support children...";
+      }
+    } else {
+      if (volRoleGroup) volRoleGroup.style.display = "flex";
+      if (volMessageInput) {
+        volMessageInput.placeholder = "Tell us how you'd like to help or share your thoughts with our team...";
+      }
+    }
+  });
+
+  // Real-time Input Validation Clearing
+  const txInput = document.getElementById("tx-hash-input");
+  txInput?.addEventListener("input", () => {
+    txInput.classList.remove("is-invalid");
+    txInput.removeAttribute("aria-invalid");
+    const errSpan = document.getElementById("tx-hash-error");
+    if (errSpan) {
+      errSpan.style.display = "none";
+      errSpan.textContent = "";
+    }
+  });
+
+  ["vol-name", "vol-contact", "vol-message"].forEach((id) => {
+    const input = document.getElementById(id);
+    const err = document.getElementById(`${id}-error`);
+    input?.addEventListener("input", () => {
+      input.classList.remove("is-invalid");
+      input.removeAttribute("aria-invalid");
+      if (err) {
+        err.style.display = "none";
+        err.textContent = "";
+      }
+    });
+  });
+
   document.getElementById("verify-tx-form")?.addEventListener("submit", handleVerificationSubmit);
   document.getElementById("volunteer-form")?.addEventListener("submit", handleVolunteerSubmit);
 }
@@ -260,20 +365,33 @@ function updateVerificationInputPlaceholder() {
 
 async function handleVerificationSubmit(e) {
   e.preventDefault();
+  const form = e.currentTarget;
   const network = document.getElementById("verify-network-select").value;
-  const txHash = document.getElementById("tx-hash-input").value.trim();
+  const txHashInput = document.getElementById("tx-hash-input");
+  const txHash = txHashInput.value.trim();
   const isAnonymous = document.getElementById("anon-toggle").checked;
   const displayName = isAnonymous
     ? siteConfig.verificationForm.anonymousDefaultText
     : (document.getElementById("display-name-input").value.trim() || siteConfig.verificationForm.anonymousDefaultText);
   const note = document.getElementById("note-input").value.trim();
+  const txError = document.getElementById("tx-hash-error");
 
+  let validationError = "";
   if (network === "btc" && !/^[a-fA-F0-9]{64}$/.test(txHash)) {
-    showToast("Bitcoin TXID must be exactly 64 hexadecimal characters.", "error");
-    return;
+    validationError = "Bitcoin TXID must be exactly 64 hexadecimal characters.";
+  } else if (network === "bsc" && !/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
+    validationError = "BSC transaction hash must start with 0x and contain 64 hex characters.";
   }
-  if (network === "bsc" && !/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
-    showToast("BSC transaction hash must start with 0x and contain 64 hex characters.", "error");
+
+  if (validationError) {
+    txHashInput.classList.add("is-invalid");
+    txHashInput.setAttribute("aria-invalid", "true");
+    if (txError) {
+      txError.textContent = validationError;
+      txError.style.display = "block";
+    }
+    showToast(validationError, "error");
+    txHashInput.focus();
     return;
   }
 
@@ -281,6 +399,10 @@ async function handleVerificationSubmit(e) {
   const original = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Verifying On-Chain...';
+
+  // Disable form inputs during async submission
+  const formInputs = form.querySelectorAll("input, select, button");
+  formInputs.forEach((el) => { if (el !== btn) el.disabled = true; });
 
   try {
     const fn = network === "btc" ? "verify-btc" : "verify-bsc";
@@ -300,12 +422,13 @@ async function handleVerificationSubmit(e) {
     if (!r.ok || !result.success) throw new Error(result.error || `Verification failed (${r.status})`);
 
     showToast(`Thank you! ${result.message || "Contribution verified!"}`, "success");
-    document.getElementById("tx-hash-input").value = "";
+    txHashInput.value = "";
     document.getElementById("note-input").value = "";
     await loadLeaderboard();
   } catch (err) {
     showToast(err.message, "error");
   } finally {
+    formInputs.forEach((el) => { el.disabled = false; });
     btn.disabled = false;
     btn.innerHTML = original;
   }
@@ -316,15 +439,46 @@ async function handleVerificationSubmit(e) {
  */
 async function handleVolunteerSubmit(e) {
   e.preventDefault();
+  const form = e.currentTarget;
   const type = document.getElementById("vol-type").value;
-  const fullName = document.getElementById("vol-name").value.trim();
-  const contact = document.getElementById("vol-contact").value.trim();
-  const location = document.getElementById("vol-location").value.trim();
-  const role = document.getElementById("vol-role").value;
-  const message = document.getElementById("vol-message").value.trim();
+  const nameInput = document.getElementById("vol-name");
+  const contactInput = document.getElementById("vol-contact");
+  const locationInput = document.getElementById("vol-location");
+  const roleSelect = document.getElementById("vol-role");
+  const msgInput = document.getElementById("vol-message");
 
-  if (!fullName || !contact || !message) {
-    showToast("Please fill in your name, contact details, and message.", "error");
+  const fullName = nameInput.value.trim();
+  const contact = contactInput.value.trim();
+  const location = locationInput ? locationInput.value.trim() : "";
+  const role = roleSelect ? roleSelect.value : "";
+  const message = msgInput.value.trim();
+
+  let hasError = false;
+
+  if (!fullName) {
+    nameInput.classList.add("is-invalid");
+    nameInput.setAttribute("aria-invalid", "true");
+    const err = document.getElementById("vol-name-error");
+    if (err) { err.textContent = "Please enter your name."; err.style.display = "block"; }
+    hasError = true;
+  }
+  if (!contact) {
+    contactInput.classList.add("is-invalid");
+    contactInput.setAttribute("aria-invalid", "true");
+    const err = document.getElementById("vol-contact-error");
+    if (err) { err.textContent = "Please enter your contact information."; err.style.display = "block"; }
+    hasError = true;
+  }
+  if (!message) {
+    msgInput.classList.add("is-invalid");
+    msgInput.setAttribute("aria-invalid", "true");
+    const err = document.getElementById("vol-message-error");
+    if (err) { err.textContent = "Please enter your message."; err.style.display = "block"; }
+    hasError = true;
+  }
+
+  if (hasError) {
+    showToast("Please fill in all required fields highlighted in red.", "error");
     return;
   }
 
@@ -332,6 +486,10 @@ async function handleVolunteerSubmit(e) {
   const original = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Sending...';
+
+  // Disable form inputs during async submission
+  const formInputs = form.querySelectorAll("input, select, textarea, button");
+  formInputs.forEach((el) => { if (el !== btn) el.disabled = true; });
 
   try {
     const r = await fetch(`${functionUrl("admin-api")}?action=submit-community`, {
@@ -346,10 +504,11 @@ async function handleVolunteerSubmit(e) {
     if (!r.ok || !j.success) throw new Error(j.error || "Submission failed. Please try again.");
 
     showToast("Thank you! Your submission has been received by the Epstein Foundation team.", "success");
-    e.target.reset();
+    form.reset();
   } catch (err) {
     showToast(err.message, "error");
   } finally {
+    formInputs.forEach((el) => { el.disabled = false; });
     btn.disabled = false;
     btn.innerHTML = original;
   }
@@ -358,6 +517,7 @@ async function handleVolunteerSubmit(e) {
 async function loadLeaderboard() {
   const tbody = document.getElementById("leaderboard-body");
   const empty = document.getElementById("leaderboard-empty");
+  const loading = document.getElementById("leaderboard-loading");
   const count = document.getElementById("stats-total-count");
   try {
     const { data, error } = await supabase
@@ -367,11 +527,15 @@ async function loadLeaderboard() {
       .order("verified_at", { ascending: false })
       .limit(siteConfig.leaderboard.pageSize || 25);
     if (error) throw error;
+    if (loading) loading.style.display = "none";
     renderLeaderboard(data || [], tbody, empty, count);
   } catch (e) {
     console.warn("Leaderboard load failed", e);
-    empty.style.display = "block";
-    empty.textContent = "Leaderboard is refreshing. Please check back in a moment.";
+    if (loading) loading.style.display = "none";
+    if (empty) {
+      empty.style.display = "block";
+      empty.textContent = "Leaderboard is refreshing. Please check back in a moment.";
+    }
   }
 }
 
@@ -387,12 +551,20 @@ function setupLeaderboardListener() {
 
 function renderLeaderboard(items, tbody, empty, count) {
   tbody.replaceChildren();
-  count.textContent = String(items.length);
-  empty.style.display = items.length ? "none" : "block";
+  if (count) count.textContent = String(items.length);
+  const loading = document.getElementById("leaderboard-loading");
+  if (loading) loading.style.display = "none";
+
   if (!items.length) {
-    empty.textContent = siteConfig.leaderboard.emptyStateMessage;
+    if (empty) {
+      empty.style.display = "block";
+      empty.textContent = siteConfig.leaderboard.emptyStateMessage;
+    }
     return;
   }
+
+  if (empty) empty.style.display = "none";
+
   items.forEach((item, i) => {
     const tr = document.createElement("tr");
     const td = (v, cls = "") => {
@@ -425,16 +597,26 @@ function renderLeaderboard(items, tbody, empty, count) {
   });
 }
 
-async function copyToClipboard(text, msg) {
+async function copyToClipboard(text, msg, btn = null) {
   try {
-    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
-    else {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
       const t = document.createElement("textarea");
       t.value = text;
       document.body.append(t);
       t.select();
       document.execCommand("copy");
       t.remove();
+    }
+    if (btn) {
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = `<span>✓ Copied!</span>`;
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+      }, 1500);
     }
     showToast(msg, "success");
   } catch {

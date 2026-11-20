@@ -1,4 +1,4 @@
-import {db,reply,preflight,clean,limited} from "./_shared.ts";
+import {db,reply as baseReply,preflight,clean,limited} from "./_shared.ts";
 const enc=(a:Uint8Array)=>btoa(String.fromCharCode(...a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
 const dec=(s:string)=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((s.length+3)%4)),c=>c.charCodeAt(0));
 async function hashPass(pass:string){const salt=crypto.getRandomValues(new Uint8Array(16)),rounds=310000,k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveBits"]),v=new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt,iterations:rounds},k,256));return "pbkdf2_sha256$"+rounds+"$"+enc(salt)+"$"+enc(v);}
@@ -11,6 +11,8 @@ Deno.serve(async(req)=>{
   const p=preflight(req);if(p)return p;
   try{
     const client=db(),action=new URL(req.url).searchParams.get("action")||"";
+    const respond=(data:unknown,status=200)=>baseReply(data,status,req);
+    const reply=respond;
 
     // Public Endpoint: Volunteer & Community Feedback Submission
     if(req.method==="POST"&&action==="submit-community"){
@@ -40,11 +42,54 @@ Deno.serve(async(req)=>{
 
     // Admin Login
     if(req.method==="POST"&&action==="login"){
-      if(!await limited(client,req))return reply({success:false,error:"Too many login attempts. Try again in 10 minutes."},429);
+      if(!await limited(client,req))return respond({success:false,error:"Too many login attempts. Try again in 10 minutes."},429);
       const b=await req.json(),user=clean(b.username,80),pass=typeof b.password==="string"?b.password.slice(0,256):"";
       const {data}=await client.from("admin_users").select("username,password_hash").eq("username",user).maybeSingle();
-      if(!data||!(await checkPass(pass,data.password_hash)))return reply({success:false,error:"Invalid username or password."},401);
-      return reply({success:true,token:await token(data.username),username:data.username,expiresIn:7200});
+      if(!data||!(await checkPass(pass,data.password_hash)))return respond({success:false,error:"Invalid username or password."},401);
+      return respond({success:true,token:await token(data.username),username:data.username,expiresIn:7200});
+    }
+
+    // Google OAuth Admin Verification
+    if(req.method==="POST"&&action==="google-login"){
+      const b=await req.json();
+      const accessToken=clean(b.accessToken,4000);
+      if(!accessToken)return respond({success:false,error:"Missing access token."},400);
+
+      const {data:{user},error:userError}=await client.auth.getUser(accessToken);
+      if(userError||!user||!user.email){
+        return respond({success:false,error:"Invalid or expired Google authentication session."},401);
+      }
+
+      const email=user.email.toLowerCase().trim();
+
+      const {data:adminRecord}=await client
+        .from("admin_users")
+        .select("id,username")
+        .or(`username.ilike.${email}`)
+        .maybeSingle();
+
+      const envAdmins=(Deno.env.get("ADMIN_EMAILS")||"")
+        .split(",")
+        .map((s:string)=>s.trim().toLowerCase())
+        .filter(Boolean);
+
+      const isDomainAuthorized=email.endsWith("@epsteinfoundation.org");
+      const isAuthorized=Boolean(adminRecord)||envAdmins.includes(email)||isDomainAuthorized;
+
+      if(!isAuthorized){
+        return respond({
+          success:false,
+          error:`Access denied. Google account (${email}) is not an authorized administrator.`
+        },403);
+      }
+
+      const adminUser=adminRecord?.username||email;
+      return respond({
+        success:true,
+        token:await token(adminUser),
+        username:adminUser,
+        expiresIn:7200
+      });
     }
 
     // Protected Admin Routes

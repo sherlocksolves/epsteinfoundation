@@ -1,0 +1,21 @@
+{
+  "name": "epstein-foundation-direct-support",
+  "version": "1.0.0",
+  "description": "Epstein Foundation — For Children Direct Support Platform",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "dev": "python -m http.server 4173 --directory public"
+  },
+  "keywords": [
+    "epstein-foundation",
+    "charity",
+    "direct-support",
+    "crypto",
+    "bitcoin",
+    "bsc"
+  ],
+  "author": "Epstein Foundation",
+  "license": "UNLICENSED",
+  "private": true
+}
